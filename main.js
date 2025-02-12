@@ -57,19 +57,49 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 18); // Brighter white lig
 scene.add(ambientLight);
 
 let mixer;
+let currentModel = null;
 
-const loader = new GLTFLoader().setPath('public/diancie/');
-loader.load('diancie_spin.gltf', (gltf) =>{
-    const mesh = gltf.scene;
-    mesh.scale.set(5, 5, 5);
-    mesh.position.set(0, 0, 0);
-    scene.add(mesh);
-    mixer = new THREE.AnimationMixer(mesh);
-    const clips = gltf.animations;
-    const clip = THREE.AnimationClip.findByName(clips, 'Spin');
-    const action =mixer.clipAction(clip);
-    action.play();
+function myFunction() {
+    console.log("Function called!");
+
+    if (currentModel) {
+        scene.remove(currentModel); // Remove from scene
+    }
+
+    let value = document.getElementById("model").value;
+
+    if (value === "diancie-rumble") {
+        const loader = new GLTFLoader().setPath('public/diancie/diancie-rumble/');
+        loader.load('diancie_spin.gltf', (gltf) => {
+            const mesh = gltf.scene;
+            mesh.scale.set(5, 5, 5);
+            mesh.position.set(0, 0, 0);
+            scene.add(mesh);
+            currentModel = mesh; // Store reference
+
+            mixer = new THREE.AnimationMixer(mesh);
+            const clips = gltf.animations;
+            const clip = THREE.AnimationClip.findByName(clips, 'Spin');
+            const action = mixer.clipAction(clip);
+            action.play();
+        });
+    } else if (value === "diancie-sv") {
+        const loader = new GLTFLoader().setPath('public/diancie/diancie-sv/');
+        loader.load('diancie.gltf', (gltf) => {
+            const mesh = gltf.scene;
+            mesh.scale.set(5, 5, 5);
+            mesh.position.set(0, 0, 0);
+            scene.add(mesh);
+            currentModel = mesh; // Store reference
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const selectElement = document.getElementById('model');
+    selectElement.addEventListener('change', myFunction);
 });
+
 
 const clock = new THREE.Clock();
 function animate() {
